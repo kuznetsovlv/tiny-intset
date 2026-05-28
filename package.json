@@ -1,0 +1,33 @@
+{
+  "name": "tiny-intset",
+  "version": "0.0.0",
+  "description": "Compact ASCII serialization for small integer sets and multisets.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "integer",
+    "set",
+    "multiset",
+    "serialization",
+    "compression",
+    "ascii",
+    "codec"
+  ],
+  "author": "Leonid Kuznetsov",
+  "license": "MIT"
+}
