@@ -24,8 +24,8 @@ export default defineConfig({
         emptyOutDir: true,
         lib: {
             entry: resolve(__dirname, 'src/index.ts'),
-            name: 'BridgeWire',
-            fileName: 'bridgewire',
+            name: 'TinyIntset',
+            fileName: 'tiny-intset',
             formats: ['es', 'cjs'],
         },
         sourcemap: true,
