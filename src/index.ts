@@ -1,1 +1,3 @@
-export const packageName = 'tiny-intset';
+export default function compressor(str: string): string {
+    return str;
+}

@@ -10,4 +10,3 @@ Planned scope:
 - deserialize back into arrays
 - support browser and Node.js usage
 - provide test cases with compression ratios
-    

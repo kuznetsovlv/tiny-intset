@@ -1,9 +1,9 @@
 import {describe, expect, it} from 'vitest';
 
-import {packageName} from './index';
+import compressor from './index';
 
-describe('packageName', () => {
-    it('exports the package name', () => {
-        expect(packageName).toBe('tiny-intset');
+describe('compressor', () => {
+    it('Check compressor', () => {
+        expect(compressor('text')).toBe('text');
     });
 });
