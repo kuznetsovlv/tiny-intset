@@ -28,3 +28,11 @@ export const MIN_LENGTH = 5;
  * length encodings.
  */
 export const MAX_LENGTH = 1000;
+
+/**
+ * Delimiter used by the naive decimal serializer.
+ *
+ * This matches the original baseline format from the task, for example:
+ * `1,300,237,188`.
+ */
+export const DELIMITER_SYMBOL = ',';
