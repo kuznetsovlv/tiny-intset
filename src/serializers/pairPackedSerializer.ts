@@ -1,5 +1,5 @@
 import {DELIMITER_SYMBOL} from '@/constants';
-import {splitToChars} from '@/utils';
+import {isAlphabet, splitToChars} from '@/utils';
 
 import Serializer from './serializer';
 import simpleSerializer from './simpleSerializer';
@@ -11,6 +11,9 @@ import simpleSerializer from './simpleSerializer';
  * `1..121`, intentionally avoiding code `0` / NUL.
  */
 const PACKED_CODE_OFFSET = 1;
+
+const ALPHABET = `0123456789${DELIMITER_SYMBOL}`;
+const MAX_PAIRS_COUNT = 127;
 
 /**
  * Raw ASCII serializer that packs pairs of decimal baseline characters.
@@ -34,13 +37,25 @@ const PACKED_CODE_OFFSET = 1;
  * the public API layer.
  */
 class PairPackedSerializer extends Serializer {
-    readonly #symbolList: string[];
+    readonly #alphabet: string;
     readonly #pairCount: number;
 
-    constructor() {
+    constructor(alphabet: string = ALPHABET) {
         super();
-        this.#symbolList = `0123456789${DELIMITER_SYMBOL}`.split('');
-        this.#pairCount = this.#symbolList.length * this.#symbolList.length;
+        if (!isAlphabet(alphabet)) {
+            throw new Error(`Invalid alphabet: ${alphabet}`);
+        }
+
+        const pairCount = alphabet.length * alphabet.length;
+
+        if (pairCount > MAX_PAIRS_COUNT) {
+            throw new Error(
+                `Alphabet size is too large: ${alphabet.length} symbols. The possible pair's count ${MAX_PAIRS_COUNT} is exceeded.`
+            );
+        }
+
+        this.#alphabet = alphabet;
+        this.#pairCount = pairCount;
     }
 
     /**
@@ -56,7 +71,7 @@ class PairPackedSerializer extends Serializer {
      * @throws Error when the character is not part of the decimal alphabet.
      */
     #getIndex(char: string): number {
-        const index = this.#symbolList.indexOf(char);
+        const index = this.#alphabet.indexOf(char);
 
         // serialize() receives a validated number array, but PairPackedSerializer
         // also depends on the canonical output format of SimpleSerializer.
@@ -77,13 +92,13 @@ class PairPackedSerializer extends Serializer {
      * @throws Error when the index is outside the serializer alphabet.
      */
     #getChar(index: number): string {
-        if (index < 0 || index >= this.#symbolList.length) {
+        if (index < 0 || index >= this.#alphabet.length) {
             throw new Error(
                 `PairPackedSerializer symbol index is out of bounds: ${index}.`
             );
         }
 
-        return this.#symbolList[index];
+        return this.#alphabet[index];
     }
 
     /**
@@ -102,7 +117,7 @@ class PairPackedSerializer extends Serializer {
      */
     #getPairCode(first: string, second: string = DELIMITER_SYMBOL): number {
         return (
-            this.#getIndex(first) * this.#symbolList.length +
+            this.#getIndex(first) * this.#alphabet.length +
             this.#getIndex(second) +
             PACKED_CODE_OFFSET
         );
@@ -124,8 +139,8 @@ class PairPackedSerializer extends Serializer {
             );
         }
 
-        const first = Math.floor(code / this.#symbolList.length);
-        const second = code % this.#symbolList.length;
+        const first = Math.floor(code / this.#alphabet.length);
+        const second = code % this.#alphabet.length;
 
         return `${this.#getChar(first)}${this.#getChar(second)}`;
     }

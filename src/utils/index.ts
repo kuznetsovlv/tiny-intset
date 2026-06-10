@@ -1,5 +1,4 @@
-import countSort from './countSort';
-import validate from './validate';
+export {default as countSort} from './countSort';
+export {default as getBitMask} from './getBitMask';
 export * from './string';
-
-export {countSort, validate};
+export {default as validate} from './validate';

@@ -11,3 +11,21 @@
 export function splitToChars(str: string): string[] {
     return str.split('');
 }
+
+export function isAlphabet(str: string): boolean {
+    if (str.length > 1) {
+        const chars = splitToChars(str);
+        const uniqChars = Array.from(new Set(chars)).join('');
+        if (uniqChars.length === str.length) {
+            return chars.every(isSafePrintableAsciiChar);
+        }
+    }
+
+    return false;
+}
+
+function isSafePrintableAsciiChar(char: string): boolean {
+    const code = char.charCodeAt(0);
+
+    return code >= 33 && code <= 126;
+}
