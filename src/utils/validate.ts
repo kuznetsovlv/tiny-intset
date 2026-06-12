@@ -1,5 +1,7 @@
 import {MAX_LENGTH, MAX_VALUE, MIN_LENGTH, MIN_VALUE} from '@/constants';
 
+import {isInteger} from './number';
+
 /**
  * Checks whether the provided value satisfies tiny-intset input constraints.
  *
@@ -37,16 +39,6 @@ function checkLength(arr: number[]): boolean {
  */
 function checkContents(arr: unknown[]): arr is number[] {
     return arr.every((value) => isInteger(value) && isInRange(value));
-}
-
-/**
- * Checks whether a value is an integer number.
- *
- * @param value - Value to check.
- * @returns `true` if the value is an integer number.
- */
-function isInteger(value: unknown): value is number {
-    return Number.isInteger(value);
 }
 
 /**

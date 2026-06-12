@@ -14,6 +14,14 @@ export const MIN_VALUE = 1;
 export const MAX_VALUE = 300;
 
 /**
+ * Number of distinct integer values supported by tiny-intset.
+ *
+ * The range is inclusive, so values from 1 through 300 provide
+ * 300 distinct possibilities.
+ */
+export const VALUE_RANGE_SIZE = MAX_VALUE - MIN_VALUE + 1;
+
+/**
  * The smallest supported input array length.
  *
  * This follows the original task constraint: the input contains from

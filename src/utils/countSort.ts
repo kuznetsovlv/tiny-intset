@@ -1,14 +1,4 @@
-import {MAX_VALUE, MIN_VALUE} from '@/constants';
-
-/**
- * Number of distinct integer values supported by tiny-intset codecs.
- *
- * The range is inclusive, so for {@link MIN_VALUE} = 1 and
- * {@link MAX_VALUE} = 300 the range contains 300 possible values.
- *
- * This value is used as the size of the counting table in counting sort.
- */
-const RANGE_SIZE = MAX_VALUE - MIN_VALUE + 1;
+import {MIN_VALUE, VALUE_RANGE_SIZE} from '@/constants';
 
 /**
  * Sorts a valid tiny-intset input using counting sort.
@@ -28,7 +18,7 @@ const RANGE_SIZE = MAX_VALUE - MIN_VALUE + 1;
  */
 export default function countSort(input: readonly number[]): number[] {
     const result = new Array<number>(input.length);
-    const counts = new Array<number>(RANGE_SIZE).fill(0);
+    const counts = new Array<number>(VALUE_RANGE_SIZE).fill(0);
 
     for (const value of input) {
         ++counts[value - MIN_VALUE];
@@ -36,7 +26,7 @@ export default function countSort(input: readonly number[]): number[] {
 
     let resultIndex = 0;
 
-    for (let offset = 0; offset < RANGE_SIZE; ++offset) {
+    for (let offset = 0; offset < VALUE_RANGE_SIZE; ++offset) {
         const count = counts[offset];
         const value = offset + MIN_VALUE;
 

@@ -24,7 +24,8 @@ const PACKED_CODE_OFFSET = 1;
  *
  * ASCII code `0` / NUL is intentionally avoided because it can be treated as a
  * string terminator by C/C++-style APIs and may be unsafe in text-processing
- * tools. ASCII code `127` / DEL is not used.
+ * tools. Codes `122..127`, including `127` / DEL, are outside the packed range
+ * and are not used.
  *
  * The output may contain control characters such as TAB, LF, CR or ESC. This
  * serializer optimizes raw JavaScript string length, not readability,
@@ -34,57 +35,61 @@ const PACKED_CODE_OFFSET = 1;
  * the public API layer.
  */
 class PairPackedSerializer extends Serializer {
-    readonly #charList: string;
+    /**
+     * Decimal-format alphabet containing digits and the delimiter.
+     */
+    readonly #alphabet: string;
+
+    /**
+     * Number of possible two-character combinations in the alphabet.
+     */
     readonly #pairCount: number;
 
     constructor() {
         super();
 
-        this.#charList = `0123456789${DELIMITER_SYMBOL}`;
-        this.#pairCount = this.#charList.length * this.#charList.length;
+        this.#alphabet = `0123456789${DELIMITER_SYMBOL}`;
+        this.#pairCount = this.#alphabet.length * this.#alphabet.length;
     }
 
     /**
      * Returns the index of a decimal-format symbol in the serializer alphabet.
-     *
-     * `serialize()` receives a validated number array, but this serializer also
-     * depends on the canonical output format of SimpleSerializer. This check
-     * protects the codec from future incompatible changes, such as adding spaces,
-     * markers or a different decimal representation.
      *
      * @param char - Decimal-format character.
      * @returns Symbol index in the `0..10` range.
      * @throws Error when the character is not part of the decimal alphabet.
      */
     #getIndex(char: string): number {
-        const index = this.#charList.indexOf(char);
+        const index = this.#alphabet.indexOf(char);
 
         // serialize() receives a validated number array, but PairPackedSerializer
-        // also depends on the canonical output format of SimpleSerializer.
+        // also depends on the canonical output format of simpleSerializer.
         // This check protects the codec from future incompatible changes, such
         // as adding spaces, markers or a different decimal representation.
         if (index < 0) {
-            throw new Error(`Unsupported char: ${char}.`);
+            throw new Error(
+                `Unsupported PairPackedSerializer decimal character: ${JSON.stringify(char)}.`
+            );
         }
 
         return index;
     }
 
     /**
-     * Returns a decimal-format symbol by its alphabet index.
+     * Returns a decimal-format character by its alphabet index.
      *
-     * @param index - Symbol index in the `0..10` range.
+     * @param index - Alphabet index in the `0..10` range.
      * @returns Decimal-format character.
      * @throws Error when the index is outside the serializer alphabet.
      */
     #getChar(index: number): string {
-        if (index < 0 || index >= this.#charList.length) {
+        if (index < 0 || index >= this.#alphabet.length) {
             throw new Error(
                 `PairPackedSerializer symbol index is out of bounds: ${index}.`
             );
         }
 
-        return this.#charList[index];
+        return this.#alphabet[index];
     }
 
     /**
@@ -103,7 +108,7 @@ class PairPackedSerializer extends Serializer {
      */
     #getPairCode(first: string, second: string = DELIMITER_SYMBOL): number {
         return (
-            this.#getIndex(first) * this.#charList.length +
+            this.#getIndex(first) * this.#alphabet.length +
             this.#getIndex(second) +
             PACKED_CODE_OFFSET
         );
@@ -125,8 +130,8 @@ class PairPackedSerializer extends Serializer {
             );
         }
 
-        const first = Math.floor(code / this.#charList.length);
-        const second = code % this.#charList.length;
+        const first = Math.floor(code / this.#alphabet.length);
+        const second = code % this.#alphabet.length;
 
         return `${this.#getChar(first)}${this.#getChar(second)}`;
     }
